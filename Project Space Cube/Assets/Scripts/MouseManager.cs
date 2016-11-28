@@ -9,6 +9,7 @@ public class MouseManager : MonoBehaviour {
 	}
 
 	public GameObject spawnObject;
+	public LayerMask snapPointLayerMask;
 
 	// Update is called once per frame
 	void Update () {
@@ -20,17 +21,18 @@ public class MouseManager : MonoBehaviour {
 			RaycastHit hitInfo;
 
 			if (Physics.Raycast (ray, out hitInfo)) {
-				GameObject objectHit = hitInfo.collider.transform.root.gameObject;
-				Debug.Log ("Hit: " + hitInfo.collider.gameObject.name);
+				// Was the click on a SnapPoint
+				// SnapPoints are always on the SnapPoint physics layer
+				int maskHitObject = 1 << hitInfo.collider.gameObject.layer;
+				if((maskHitObject & snapPointLayerMask) != 0){
+					// Spawn new object
+					Vector3 spawnLocation = hitInfo.collider.transform.position + hitInfo.normal;
+					Quaternion spawnRotation = Quaternion.FromToRotation (Vector3.forward, hitInfo.normal);
 
-				// Spawn new object
-				Vector3 spawnLocation = hitInfo.collider.transform.position + hitInfo.normal;
-				Quaternion spawnRotation = Quaternion.FromToRotation (Vector3.forward, hitInfo.normal);
-
-				Instantiate(spawnObject, spawnLocation, spawnRotation);
+					Instantiate(spawnObject, spawnLocation, spawnRotation);
+				}
 			}
 		}
-	
 	}
 		
 }
