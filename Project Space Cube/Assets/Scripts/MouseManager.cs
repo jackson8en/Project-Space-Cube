@@ -8,7 +8,7 @@ public class MouseManager : MonoBehaviour {
 	
 	}
 
-	public GameObject thePrefabToSpawn;
+	public GameObject spawnObject;
 
 	// Update is called once per frame
 	void Update () {
@@ -20,11 +20,14 @@ public class MouseManager : MonoBehaviour {
 			RaycastHit hitInfo;
 
 			if (Physics.Raycast (ray, out hitInfo)) {
+				GameObject objectHit = hitInfo.collider.transform.root.gameObject;
 				Debug.Log ("Hit: " + hitInfo.collider.gameObject.name);
 
 				// Spawn new object
-				Vector3 spawnLocation = hitInfo.point;
-				Instantiate(thePrefabToSpawn, spawnLocation, Quaternion.identity);
+				Vector3 spawnLocation = hitInfo.collider.transform.position + hitInfo.normal;
+				Quaternion spawnRotation = Quaternion.FromToRotation (Vector3.forward, hitInfo.normal);
+
+				Instantiate(spawnObject, spawnLocation, spawnRotation);
 			}
 		}
 	
