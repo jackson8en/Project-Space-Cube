@@ -24,13 +24,34 @@ public class CameraManager : MonoBehaviour {
 	}
 		
 	public Camera theCamera;
-
 	private Transform cameraRig;
-
 	private Vector3 previousMousePos;
 
+	public float orbitSensitivity = 4;
+
+	public float zoomMultiplier = 2;
+	public float minDist = 2;
+	public float maxDist = 25;
+
+	float panSpeed = 1;
+
+	void Update(){
+		OrbitCamera ();
+		DollyCamera ();
+	}
+
+	void DollyCamera(){
+		float delta = - Input.GetAxis ("Mouse ScrollWheel");
+
+		//Move camera forwards or backwards
+		Vector3 actualChange = theCamera.transform.localPosition * zoomMultiplier * delta;
+		Vector3 newPos = theCamera.transform.localPosition + actualChange;
+		newPos = newPos.normalized * Mathf.Clamp (newPos.magnitude, minDist, maxDist);
+		theCamera.transform.localPosition = newPos;
+	}
+
 	// Update is called once per frame
-	void Update () {
+	void OrbitCamera () {
 
 		if (Input.GetMouseButtonDown (1) == true) {
 			// Mouse down this frame
@@ -49,14 +70,21 @@ public class CameraManager : MonoBehaviour {
 			// Orbit camera rig around focal point
 			Vector3 posRelativeToRig = theCamera.transform.localPosition;
 
-			Vector3 rotationAngles = mouseMovement / 10;
+			Vector3 rotationAngles = mouseMovement * orbitSensitivity * Time.deltaTime;
 
-			Quaternion theRotation = Quaternion.Euler(rotationAngles.y, rotationAngles.x, 0);
+			// TODO: Fix me
+			//Quaternion theRotation = Quaternion.Euler(rotationAngles.y, rotationAngles.x, 0);
 
-			posRelativeToRig = theRotation * posRelativeToRig;
-			theCamera.transform.localPosition = posRelativeToRig;
+			//posRelativeToRig = theRotation * posRelativeToRig;
+			//theCamera.transform.localPosition = posRelativeToRig;
 
-			previousMousePos = currentMousePos;
+			theCamera.transform.RotateAround (cameraRig.transform.position, theCamera.transform.right, rotationAngles.y);
+			theCamera.transform.RotateAround (cameraRig.position, theCamera.transform.up, rotationAngles.x);
+
+			// Correct camera viewpoint to focal
+			Quaternion lookRotation = Quaternion.LookRotation( - theCamera.transform.localPosition);
+			theCamera.transform.rotation = lookRotation;
+
 		}
 	}
 }
