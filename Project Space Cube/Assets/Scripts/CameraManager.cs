@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour {
 
@@ -28,12 +29,11 @@ public class CameraManager : MonoBehaviour {
 	private Vector3 previousMousePos;
 
 	public float orbitSensitivity = 4;
+	public bool orbitAllowed = false;
 
 	public float zoomMultiplier = 2;
 	public float minDist = 2;
 	public float maxDist = 25;
-
-	float panSpeed = 1;
 
 	void Update(){
 		OrbitCamera ();
@@ -53,12 +53,12 @@ public class CameraManager : MonoBehaviour {
 	// Update is called once per frame
 	void OrbitCamera () {
 
-		if (Input.GetMouseButtonDown (1) == true) {
+		if (orbitAllowed == true && Input.GetMouseButtonDown(0)) {
 			// Mouse down this frame
 			previousMousePos = Input.mousePosition;
 		}
 
-		if (Input.GetMouseButton (1) == true) {
+		if (orbitAllowed == true && Input.GetMouseButton(0)) {
 			// Holding down Right-Mouse Button
 
 			// Current mouse position is...
@@ -68,7 +68,7 @@ public class CameraManager : MonoBehaviour {
 			Vector3 mouseMovement = currentMousePos - previousMousePos;
 
 			// Orbit camera rig around focal point
-			Vector3 posRelativeToRig = theCamera.transform.localPosition;
+			//Vector3 posRelativeToRig = theCamera.transform.localPosition;
 
 			Vector3 rotationAngles = mouseMovement * orbitSensitivity * Time.deltaTime;
 
@@ -85,6 +85,14 @@ public class CameraManager : MonoBehaviour {
 			Quaternion lookRotation = Quaternion.LookRotation( - theCamera.transform.localPosition);
 			theCamera.transform.rotation = lookRotation;
 
+		}
+	}
+
+	public void OrbitToggle(){
+		if (orbitAllowed == false) {
+			orbitAllowed = true;
+		} else if (orbitAllowed == true) {
+			orbitAllowed = false;
 		}
 	}
 }

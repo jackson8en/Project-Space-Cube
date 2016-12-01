@@ -15,11 +15,12 @@ public class Thruster : MonoBehaviour {
 
 		if (shipRigidbody.isKinematic) {
 			return;
-		}
-
-		if (Input.GetKey (KeyCode.Space)) {
-			Vector3 theForce = - this.transform.forward * ThrusterStrength;
-			shipRigidbody.AddForceAtPosition ( theForce, this.transform.position);
+		} else {
+		
+			if (Input.GetMouseButton(0)) {
+				Vector3 theForce = - this.transform.forward * ThrusterStrength;
+				shipRigidbody.AddForceAtPosition ( theForce, this.transform.position);
+			}		
 		}
 	}
 
